@@ -15,5 +15,5 @@ debug          = "none"
 strip          = "symbols"
 
 [dependencies.alphabill]
-git = "ssh://git@github.com:alphabill-org/alphabill-rust-predicates-sdk.git"
+git = "https://github.com/alphabill-org/alphabill-rust-predicates-sdk.git"
 features = [ "panic-handler" ]
