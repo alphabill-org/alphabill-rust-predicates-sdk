@@ -25,7 +25,7 @@ pub fn load_bytes(ptr: u64) -> Vec<u8> {
 }
 
 #[link(wasm_import_module = "host")]
-extern "C" {
+unsafe extern "C" {
     /// returns address of allocated block.
     #[link_name = "ext_malloc"]
     fn _ext_malloc(size: u32) -> u32;
@@ -50,11 +50,11 @@ mod allocator_impl {
 
     unsafe impl GlobalAlloc for WasmAllocator {
         unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-            _ext_malloc(layout.size() as u32) as *mut u8
+            unsafe { _ext_malloc(layout.size() as u32) as *mut u8 }
         }
 
         unsafe fn dealloc(&self, ptr: *mut u8, _: Layout) {
-            _ext_free(ptr as u32)
+            unsafe { _ext_free(ptr as u32) }
         }
     }
 }

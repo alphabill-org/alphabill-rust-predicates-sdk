@@ -30,7 +30,7 @@ pub fn cbor_parse_array(handle: u64) -> Vec<u64> {
 }*/
 
 #[link(wasm_import_module = "cbor")]
-extern "C" {
+unsafe extern "C" {
     #[link_name = "parse"]
     fn _parse(handle: u64) -> u64;
 

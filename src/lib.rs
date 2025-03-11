@@ -5,7 +5,7 @@ Alphabill supports implementing predicates as WASM modules which export
 function(s) with signature
 ```rust
 # use alphabill::predicate_result;
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn predicate_name() -> u64 {
     predicate_result!(true)
 }
@@ -25,9 +25,7 @@ of the predicate.
 The [cargo-generate](https://cargo-generate.github.io/cargo-generate/) tool
 can be used to start a new predicate project from template:
 ```shell
-cargo generate \
-    --git ssh://git@gitdc.ee.guardtime.com/alphabill/alphabill-experiments.git
-    rust-sdk/pred-tmpl
+cargo-generate generate --git https://github.com/alphabill-org/alphabill-rust-predicates-sdk template
 ```
 Write the predicate logic in the `src/lib.rs` file and compile it to WASM:
 ```shell
@@ -64,7 +62,7 @@ fn panic(_panic: &core::panic::PanicInfo<'_>) -> ! {
 Returns SDK version number. Host can use it do decide which features
 are available and how to encode data structures.
 */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn _ab_sdk_version() -> u32 {
     1
 }
@@ -90,7 +88,7 @@ three main forms:
 ```
 use alphabill::predicate_result;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn my_predicate() -> u64 {
     if true {
         predicate_result!(true)

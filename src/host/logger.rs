@@ -31,7 +31,7 @@ fn log(level: u32, msg: &str) {
 }
 
 #[link(wasm_import_module = "host")]
-extern "C" {
+unsafe extern "C" {
     /// logs the data (pointed by data_ptr) on level "lvl" using host logger
     #[link_name = "log_msg"]
     fn _log_host(lvl: u32, data_ptr: u64);

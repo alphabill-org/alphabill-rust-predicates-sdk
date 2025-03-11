@@ -9,7 +9,7 @@ TODO: description of the predicate
  - `0`: predicate evaluated to "true";
  - `1`: predicate evaluated to "false";
 */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn {{predicate_name}}() -> u64 {
     let txo = evaluation_ctx::tx_order();
     predicate_result!(true)

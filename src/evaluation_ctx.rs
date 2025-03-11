@@ -97,7 +97,7 @@ pub fn serialize_obj(handle: u64, version: u8) -> u64 {
 }
 
 #[link(wasm_import_module = "context")]
-extern "C" {
+unsafe extern "C" {
     #[link_name = "create_obj_m"]
     fn _create_obj_m(type_id: u32, addr: u64) -> u64;
 

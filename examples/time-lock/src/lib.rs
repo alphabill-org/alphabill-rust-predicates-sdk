@@ -25,7 +25,7 @@ recognized after that date.
  - `0xnn05`: failed to load tx order;
  - `0xnn0c`: failed to load configuration;
 */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn time_lock() -> u64 {
     let cfg = match Config::load() {
         Ok(c) => c,

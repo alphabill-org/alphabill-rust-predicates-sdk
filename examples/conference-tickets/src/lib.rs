@@ -63,7 +63,7 @@ in the "transfer NFT" transaction for the predicate must be empty).
  - `0xnn0c`: failed to load config arguments;
 */
 #[cfg(feature = "type-bearer")]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn type_bearer() -> u64 {
     let cfg = match Config::load() {
         Ok(c) => c,
@@ -114,7 +114,7 @@ No arguments. Also doesn't access the "configuration parameters".
  - `0xnn0d`: failed to load tx order;
  */
 #[cfg(feature = "type-update-data")]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn type_update_data() -> u64 {
     let txo = match evaluation_ctx::tx_order() {
         Ok(txo) => txo,
@@ -181,7 +181,7 @@ flag which saves the transfer proof(s) in this format.
  - `0xnn0c`: failed to load configuration;
 */
 #[cfg(feature = "token-bearer")]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn token_bearer() -> u64 {
     let cfg = match Config::load() {
         Ok(c) => c,
@@ -245,7 +245,7 @@ flag which saves the transfer proof(s) in this format.
  - `0xnn0d`: failed to load tx order;
  */
 #[cfg(feature = "token-update-data")]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn token_update_data() -> u64 {
     let cfg = match Config::load() {
         Ok(c) => c,

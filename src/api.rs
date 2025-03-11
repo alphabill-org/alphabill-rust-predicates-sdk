@@ -56,7 +56,7 @@ pub fn amount_transferred(tx_proof_h: u64, receiver_pkh: &[u8], ref_no: Option<&
 }
 
 #[link(wasm_import_module = "ab")]
-extern "C" {
+unsafe extern "C" {
     #[link_name = "amount_transferred"]
     fn _amount_transferred(handle: u64, pk: u64, ref_no: u64) -> u64;
 
