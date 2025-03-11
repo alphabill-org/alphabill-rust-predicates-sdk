@@ -17,9 +17,14 @@ Predicates for a token type of the "conference X ticket" example use-case.
 #![no_std]
 
 extern crate alloc;
+#[cfg(any(
+    feature = "type-bearer",
+    feature = "token-update-data",
+    feature = "token-bearer",
+))]
 use alloc::vec::Vec;
 
-use alphabill::{error::Error, evaluation_ctx, predicate_result};
+use alphabill::{evaluation_ctx, predicate_result};
 
 #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
 use alphabill::api::SignedByResult;
@@ -38,6 +43,7 @@ use alphabill::txsystem::token::nft;
 use alphabill::{
     cbor,
     decoder::{self, Value},
+    error::Error,
 };
 
 /**

@@ -27,7 +27,7 @@ crate-type = ["cdylib"]
 ```
 and export function(s) with signature
 ```rust
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn predicate_name() -> u64 {
 }
 ```

@@ -2,11 +2,10 @@ extern crate alloc;
 #[cfg(any(feature = "money-transfer", feature = "money-split"))]
 use alloc::vec::Vec;
 
-use crate::{
-    error::{error_code, Error},
-    evaluation_ctx,
-    txsystem::TxOrder,
-};
+#[cfg(any(feature = "money-transfer", feature = "money-split"))]
+use crate::{error::error_code, evaluation_ctx};
+
+use crate::{error::Error, txsystem::TxOrder};
 
 pub const SYSTEM_ID: u32 = 1;
 

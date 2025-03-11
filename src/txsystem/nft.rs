@@ -1,12 +1,25 @@
+#[cfg(any(
+    feature = "nft-create-type",
+    feature = "nft-mint-token",
+    feature = "nft-transfer",
+    feature = "nft-update"
+))]
 use alloc::{string::String, vec::Vec};
 extern crate alloc;
 
+#[cfg(any(
+    feature = "nft-create-type",
+    feature = "nft-mint-token",
+    feature = "nft-transfer",
+    feature = "nft-update"
+))]
 use crate::{
     decoder::{self},
-    error::{error_code, Error},
+    error::error_code,
     evaluation_ctx,
-    txsystem::TxOrder,
 };
+
+use crate::{error::Error, txsystem::TxOrder};
 
 #[cfg(feature = "nft-create-type")]
 const PAYLOAD_TYPE_NFT_CREATE_TYPE: u32 = 2;
