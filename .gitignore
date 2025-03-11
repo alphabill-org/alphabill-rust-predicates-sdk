@@ -1,0 +1,5 @@
+**/target
+# except release binary
+!**/target/wasm32-unknown-unknown/release/.wasm
+
+.DS_Store

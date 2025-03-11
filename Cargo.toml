@@ -1,0 +1,37 @@
+[package]
+name = "alphabill"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+
+
+[features]
+default = [ "panic-handler", "ft", "nft", "money" ]
+
+# when enabled lib implements panic handler for wasm32 target.
+panic-handler = []
+
+# Non Fungible Token features
+nft = [ "nft-create-type", "nft-mint-token", "nft-update", "nft-transfer", "nft-type-data", "nft-token-data" ]
+# NFT transaction attributes
+nft-create-type = []
+nft-mint-token = []
+nft-update = []
+nft-transfer = []
+# support for unit data types
+nft-type-data = []
+nft-token-data = []
+
+# Fungible Token features
+ft = [ "ft-create-type", "ft-mint-token", "ft-transfer" ]
+# FT transaction attributes
+ft-create-type = []
+ft-mint-token = []
+ft-transfer = []
+
+money = [ "money-split", "money-transfer" ]
+# money transaction attributes
+money-split = []
+money-transfer = []

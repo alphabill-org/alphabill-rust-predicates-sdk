@@ -1,0 +1,34 @@
+[package]
+name = "time-lock"
+version = "0.1.0"
+edition = "2021"
+
+
+[lib]
+# cdylib builds a %.wasm file with `cargo build --release --target wasm32-unknown-unknown`
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+debug = "none"
+strip = "symbols"
+
+
+[build]
+target = "wasm32-unknown-unknown"
+
+
+[target.wasm32-unknown-unknown]
+rustflags = [
+  "-C", "link-args=--import-memory -zstack-size=8096 --initial-memory=65536 --max-memory=1310720 --gc-sections",
+]
+
+
+[dependencies.alphabill]
+path = "../.."
+default-features = false
+features = [ "panic-handler" ]
