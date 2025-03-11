@@ -1,19 +1,30 @@
 [package]
-name     = "{{project-name}}"
-version  = "0.0.1"
-edition  = "2021"
+name = "{{project-name}}"
+version = "0.0.1"
+edition = "2021"
+
 
 [lib]
-crate-type  = ["cdylib"]
-path        = "src/lib.rs"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
 
 [profile.release]
-opt-level      = "s"
-lto            = true
-codegen-units  = 1
-debug          = "none"
-strip          = "symbols"
+opt-level = "s"
+lto = true
+codegen-units = 1
+debug = "none"
+strip = "symbols"
+
+
+[target.wasm32-unknown-unknown]
+rustflags = [
+    "-C",
+    "link-args=--import-memory -zstack-size=8096 --initial-memory=65536 --max-memory=1310720 --gc-sections",
+]
+
 
 [dependencies.alphabill]
 git = "https://github.com/alphabill-org/alphabill-rust-predicates-sdk.git"
-features = [ "panic-handler" ]
+default-features = false
+features = ["panic-handler"]
