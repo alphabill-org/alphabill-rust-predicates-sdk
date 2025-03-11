@@ -12,6 +12,15 @@ in the repository root and open the generated doc in a web browser.
 
 ## Quick Start
 
+The [cargo-generate](https://cargo-generate.github.io/cargo-generate/) tool can
+be used to create predicate project from template:
+
+```sh
+cargo-generate generate --git https://github.com/alphabill-org/alphabill-rust-predicates-sdk template
+```
+
+### Predicates
+
 Predicate project should be "library" project with
 ```toml
 crate-type = ["cdylib"]
