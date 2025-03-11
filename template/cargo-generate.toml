@@ -1,0 +1,5 @@
+[template]
+cargo_generate_version = "0.19.0"
+
+[placeholders]
+predicate_name = { prompt = "Predicate function name", default = "predicate_name", type = "string" }
