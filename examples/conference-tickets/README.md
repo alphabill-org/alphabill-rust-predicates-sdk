@@ -111,16 +111,18 @@ values and then supplied as argument for the `parameter-file` flag.
 Example content of the `args.plist` file:
 ```plist
 (
-    /* D1 - timestamp, when the early-bird pricing ends */
-    <*I1709683200>,
-    /* D2 - timestamp, tickets can be transferred until this date */
-    <*I1709783200>,
-    /* P1 - early-bird price */
-    <*I1000>,
-    /* P2 - regular ticket price */
-    <*I2500>,
+    (
+        /* D1 - timestamp, when the early-bird pricing ends */
+        <*I1709683200>,
+        /* D2 - timestamp, tickets can be transferred until this date */
+        <*I1709783200>,
+        /* P1 - early-bird price */
+        <*I1000>,
+        /* P2 - regular ticket price */
+        <*I2500>
+    )
     /* hex encoded public key hash of the organizer (receiver of payments) */
-    <01020305060708090abcdef>
+    <045559d0b5c1c260e3feb8fef6b360bd1570847e0d0c18d9b6c7a5a397873e53>
 )
 ```
 See ie https://gnustep.github.io/resources/documentation/Developer/Base/Reference/NSPropertyList.html

@@ -81,3 +81,7 @@ where `time_lock_bearer.cbor` file contains the predicate BLOB created
 on previous step (IOW output of the `create-wasm-predicate` tool). 
 
 **NB!** The wallet currently actually does not support the `bearer-clause` flag with `send` command!
+
+See the unit test in
+[Alphabill repo](https://github.com/alphabill-org/alphabill/blob/main/predicates/wasm/wvm/demo_time_lock_test.go)
+for more how to use the predicate.

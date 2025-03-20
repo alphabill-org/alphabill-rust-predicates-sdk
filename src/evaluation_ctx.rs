@@ -7,13 +7,19 @@ use alloc::vec::Vec;
 
 use crate::{error::Error, memory, txsystem::TxOrder};
 
-/// handle of the transaction order which triggered the predicate
-pub const HANDLE_TX_ORDER: u64 = 1;
-/// handle of the (user provided) predicate argument
-pub const HANDLE_ARGUMENT: u64 = 2;
-/// handle of the argument provided when predicate record was created
-pub const HANDLE_CONFIG: u64 = 3;
+/// handle to host variable
+pub type ABHandle = u32;
 
+/// handle of the transaction order which triggered the predicate
+pub const HANDLE_TX_ORDER: ABHandle = 1;
+/// handle of the predicate argument (extracted from the proof).
+pub const HANDLE_ARGUMENT: ABHandle = 2;
+/// handle of the argument provided when predicate record was created
+pub const HANDLE_CONFIG: ABHandle = 3;
+
+/**
+Returns current round number of the host transaction system shard.
+*/
 pub fn current_round() -> u64 {
     unsafe { _current_round() }
 }
@@ -62,25 +68,35 @@ pub fn unit_data(unit_id: &Vec<u8>, committed: bool, version: u8) -> Vec<u8> {
 }
 
 /**
-`create_obj` creates object in the host execution environment.
-The object lives only in the context of the current program.
+Creates variable in the host execution environment.
+
+The variable lives only in the context of the current program.
 # Arguments
- * `type_id` - identifier of native Alphabill type;
- * `data` - the native serialized representation (CBOR) of the object;
- * returns handle of the object;
+ * `data` - raw bytes to use as the value of the variable;
+
+Returns handle of the variable;
+
+If the buffer represents some complex data type the [create_obj] api can be
+used to "convert" it to "complex structure".
 */
-pub fn create_obj(type_id: u16, data: Vec<u8>) -> u64 {
-    // todo: there should also be tx system id param?
+pub fn add_var(data: Vec<u8>) -> ABHandle {
     let p = data.as_ptr();
     let addr = memory::pack_pointer((p as usize) as u32, data.len());
-    unsafe { _create_obj_m(type_id as u32, addr) }
+    unsafe { _add_var(addr) }
 }
 
 /**
-create_obj_from_handle is like [create_obj] but the raw data of the object
-is denoted by handle rather than memory address.
+Creates object in the host execution environment.
+
+The object lives only in the context of the current program.
+# Arguments
+ * `type_id` - identifier of the native Alphabill type;
+ * `handle` - the native serialized representation (CBOR) of the object;
+
+Returns handle of the object;
 */
-pub fn create_obj_from_handle(type_id: u16, handle: u64) -> u64 {
+pub fn create_obj(type_id: u16, handle: ABHandle) -> ABHandle {
+    // todo: there should also be tx system id param?
     unsafe { _create_obj_h(type_id as u32, handle) }
 }
 
@@ -92,23 +108,23 @@ it is returned. The [decoder] can then be used to parse it.
 
 [decoder]: crate::decoder::Decoder
 */
-pub fn serialize_obj(handle: u64, version: u8) -> u64 {
+pub fn serialize_obj(handle: ABHandle, version: u8) -> u64 {
     unsafe { _serialize_obj(handle, version) }
 }
 
 #[link(wasm_import_module = "context")]
 unsafe extern "C" {
-    #[link_name = "create_obj_m"]
-    fn _create_obj_m(type_id: u32, addr: u64) -> u64;
+    #[link_name = "add_var"]
+    fn _add_var(addr: u64) -> ABHandle;
 
     #[link_name = "create_obj_h"]
-    fn _create_obj_h(type_id: u32, addr: u64) -> u64;
+    fn _create_obj_h(type_id: u32, handle: ABHandle) -> ABHandle;
 
     #[link_name = "serialize_obj"]
-    fn _serialize_obj(handle: u64, version: u8) -> u64;
+    fn _serialize_obj(handle: ABHandle, version: u8) -> u64;
 
     #[link_name = "tx_attributes"]
-    fn _tx_attributes(handle: u64, version: u8) -> u64;
+    fn _tx_attributes(handle: ABHandle, version: u8) -> u64;
 
     #[link_name = "current_round"]
     fn _current_round() -> u64;

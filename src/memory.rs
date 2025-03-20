@@ -1,3 +1,7 @@
+/*!
+Memory management support.
+*/
+
 use alloc::vec::Vec;
 extern crate alloc;
 

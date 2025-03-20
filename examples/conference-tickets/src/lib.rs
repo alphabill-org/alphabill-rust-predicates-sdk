@@ -16,18 +16,19 @@ Predicates for a token type of the "conference X ticket" example use-case.
 
 #![no_std]
 
+#[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
 extern crate alloc;
-#[cfg(any(
-    feature = "type-bearer",
-    feature = "token-update-data",
-    feature = "token-bearer",
-))]
+#[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
 use alloc::vec::Vec;
 
-use alphabill::{evaluation_ctx, predicate_result};
+use alphabill::{
+    evaluation_ctx::{self},
+    predicate_result,
+};
 
 #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
 use alphabill::api::SignedByResult;
+
 #[cfg(any(
     feature = "type-bearer",
     feature = "type-update-data",
@@ -44,6 +45,7 @@ use alphabill::{
     cbor,
     decoder::{self, Value},
     error::Error,
+    evaluation_ctx::ABHandle,
 };
 
 /**
@@ -198,7 +200,7 @@ pub extern "C" fn token_bearer() -> u64 {
         Err(err) => predicate_result!(err.chain(5)),
     };
 
-    match txo.signed_by(&cfg.pkh) {
+    match txo.signed_by(cfg.pkh) {
         SignedByResult::True => predicate_result!(true),
         SignedByResult::False => predicate_result!(false, 8),
         _ => (),
@@ -215,7 +217,7 @@ pub extern "C" fn token_bearer() -> u64 {
     // the reference-number in the payment order is the hash of (1, token ID)
     let mut nonce_data: Vec<u8> = alloc::vec![0x01];
     nonce_data.append(&mut txo.unit_id);
-    let transferred = check_money_transfer(&cfg.pkh, nonce_data);
+    let transferred = check_money_transfer(cfg.pkh, nonce_data);
 
     if (status == b"early-bird" && transferred == cfg.early_bird_price)
         || (status == b"regular" && transferred == cfg.regular_price)
@@ -262,7 +264,7 @@ pub extern "C" fn token_update_data() -> u64 {
         Err(err) => predicate_result!(err.chain(0x0d)),
     };
 
-    match txo.signed_by(&cfg.pkh) {
+    match txo.signed_by(cfg.pkh) {
         SignedByResult::True => predicate_result!(true),
         SignedByResult::False => predicate_result!(false, 8),
         _ => (),
@@ -277,7 +279,7 @@ pub extern "C" fn token_update_data() -> u64 {
     // the nonce in the payment order is the hash of the pair (2, token ID)
     let mut nonce_data: Vec<u8> = alloc::vec![0x02];
     nonce_data.append(&mut txo.unit_id);
-    let transferred = check_money_transfer(&cfg.pkh, nonce_data);
+    let transferred = check_money_transfer(cfg.pkh, nonce_data);
     if transferred != cfg.regular_price - cfg.early_bird_price {
         predicate_result!(false, 7)
     }
@@ -289,7 +291,7 @@ checks that the money transfer transaction(s) sent in as predicate argument
 is valid and returns the amount transferred.
 */
 #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
-fn check_money_transfer(pkh: &[u8], nonce_data: Vec<u8>) -> u64 {
+fn check_money_transfer(pkh: ABHandle, nonce_data: Vec<u8>) -> u64 {
     let ref_no = alphabill::api::digest_sha256(nonce_data);
     alphabill::api::amount_transferred(evaluation_ctx::HANDLE_ARGUMENT, pkh, Some(&ref_no))
 }
@@ -300,18 +302,27 @@ fn check_money_transfer(pkh: &[u8], nonce_data: Vec<u8>) -> u64 {
     feature = "type-bearer"
 ))]
 struct Config {
+    #[cfg(any(feature = "type-bearer"))]
     /// after this date early-bird price ends
     early_bird_date: u64,
+
+    #[cfg(any(feature = "token-update-data", feature = "type-bearer"))]
     /// tickets can be transferred until this date
     transferrable_until: u64,
+
+    #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
     /// early-bird price
     early_bird_price: u64,
+
+    #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
     /// regular ticket price
     regular_price: u64,
+
+    #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
     /// public key hash of the organizer.
     /// At this time only the p2pkh template is supported so we store
     /// the hash rather than public key
-    pkh: Vec<u8>,
+    pkh: ABHandle,
 }
 
 #[cfg(any(
@@ -321,48 +332,44 @@ struct Config {
 ))]
 impl Config {
     fn load() -> Result<Self, Error> {
-        // the config BLOB is created at the same time the predicate is created
-        // so we can be reasonably sure it is correct (ie right amount of items
-        // in correct order and of type) so we do not use tagged encoding, just
-        // read positional values...
-        // TODO: instead of parsing CBOR each time save the arg as TV encoded
-        // blob to begin with!
-        let input = cbor::parse(evaluation_ctx::HANDLE_CONFIG);
-        Self::from(input)
+        let cfg = cbor::parse_array(evaluation_ctx::HANDLE_CONFIG);
+        Self::from(cfg)
     }
 
-    fn from(input: &[u8]) -> Result<Self, Error> {
-        let mut p = decoder::Decoder::new(input);
+    fn from(cfg: &[ABHandle]) -> Result<Self, Error> {
+        let mut p = decoder::Decoder::from_handle(cfg[0]);
         let v = p.value();
         if let Value::Array(items) = v {
-            if items.len() != 5 {
+            if items.len() != 4 {
                 return Err(Error::new(7));
             }
             return Ok(Config {
+                #[cfg(any(feature = "type-bearer"))]
                 early_bird_date: match items[0] {
                     Value::U64(v) => v,
                     Value::U32(v) => v.into(),
                     _ => return Err(Error::new(1)),
                 },
+                #[cfg(any(feature = "token-update-data", feature = "type-bearer"))]
                 transferrable_until: match items[1] {
                     Value::U64(v) => v,
                     Value::U32(v) => v.into(),
                     _ => return Err(Error::new(2)),
                 },
+                #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
                 early_bird_price: match items[2] {
                     Value::U64(v) => v,
                     Value::U32(v) => v.into(),
                     _ => return Err(Error::new(3)),
                 },
+                #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
                 regular_price: match items[3] {
                     Value::U64(v) => v,
                     Value::U32(v) => v.into(),
                     _ => return Err(Error::new(4)),
                 },
-                pkh: match &items[4] {
-                    Value::Bytes(v) => v.to_vec(),
-                    _ => return Err(Error::new(5)),
-                },
+                #[cfg(any(feature = "token-update-data", feature = "token-bearer"))]
+                pkh: cfg[1],
             });
         }
         Err(Error::new(6))

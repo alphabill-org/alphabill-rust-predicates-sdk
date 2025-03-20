@@ -1,3 +1,7 @@
+/*!
+Money transaction system APIs and data structures.
+*/
+
 extern crate alloc;
 #[cfg(any(feature = "money-transfer", feature = "money-split"))]
 use alloc::vec::Vec;
