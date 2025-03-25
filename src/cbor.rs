@@ -21,7 +21,7 @@ of each individual element.
 [`Decoder`]: crate::decoder::Decoder
 [`serialize_obj`]: crate::evaluation_ctx::serialize_obj
 */
-pub fn parse<'a>(handle: ABHandle) -> ABHandle {
+pub fn parse(handle: ABHandle) -> ABHandle {
     let addr = unsafe { _parse(handle, FLAG_STRUCT) };
     let (addr, size) = memory::unpack_pointer(addr);
     let data = addr as *const ABHandle;

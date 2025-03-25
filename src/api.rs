@@ -40,7 +40,11 @@ Verify that money transfer has taken place.
 - receiver_pkh: PubKey hash to which the money has been transferred to;
 - ref_no: if given the transfer(s) must have the given reference number;
 */
-pub fn amount_transferred(tx_proof: ABHandle, receiver_pkh: ABHandle, ref_no: Option<&[u8]>) -> u64 {
+pub fn amount_transferred(
+    tx_proof: ABHandle,
+    receiver_pkh: ABHandle,
+    ref_no: Option<&[u8]>,
+) -> u64 {
     let addr_rn = match ref_no {
         None => 0,
         Some(d) => {
