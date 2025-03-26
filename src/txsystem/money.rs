@@ -29,7 +29,7 @@ pub enum TxKind {
 
 pub fn tx_attributes(txo: &TxOrder) -> Result<TxKind, Error> {
     #[cfg(any(feature = "money-transfer", feature = "money-split"))]
-    let data = evaluation_ctx::tx_attributes(txo, 1);
+    let data = evaluation_ctx::tx_attributes(txo.handle, 1);
     match txo.typ {
         #[cfg(feature = "money-transfer")]
         PAYLOAD_TYPE_TRANSFER => Ok(TxKind::Transfer(Transfer::from(data)?)),

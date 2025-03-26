@@ -48,8 +48,8 @@ ie [`ft::tx_attributes`], [`nft::tx_attributes`] or [`money::tx_attributes`].
 [`nft::tx_attributes`]: crate::txsystem::token::nft::tx_attributes
 [`money::tx_attributes`]: crate::txsystem::money::tx_attributes
 */
-pub fn tx_attributes(txo: &TxOrder, version: u8) -> Vec<u8> {
-    let addr = unsafe { _tx_attributes(txo.handle, version) };
+pub fn tx_attributes(txo: ABHandle, version: u8) -> Vec<u8> {
+    let addr = unsafe { _tx_attributes(txo, version) };
     memory::load_bytes(addr)
 }
 

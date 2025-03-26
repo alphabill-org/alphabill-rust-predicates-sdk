@@ -51,7 +51,7 @@ pub fn tx_attributes(txo: &TxOrder) -> Result<TxKind, Error> {
         feature = "ft-mint-token",
         feature = "ft-transfer",
     ))]
-    let data = evaluation_ctx::tx_attributes(txo, 1);
+    let data = evaluation_ctx::tx_attributes(txo.handle, 1);
     match txo.typ {
         #[cfg(feature = "ft-create-type")]
         PAYLOAD_TYPE_FT_CREATE_TYPE => Ok(TxKind::CreateType(CreateType::from(data)?)),

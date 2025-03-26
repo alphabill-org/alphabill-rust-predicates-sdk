@@ -52,7 +52,7 @@ pub fn tx_attributes(txo: &TxOrder) -> Result<TxKind, Error> {
     // right now we have just one version of all the attribute structs so we can
     // load the data here - as soon as some struct needs to support multiple
     // versions we have to load the data for concrete type... see Mint::load()
-    let data = evaluation_ctx::tx_attributes(txo, 1);
+    let data = evaluation_ctx::tx_attributes(txo.handle, 1);
     match txo.typ {
         #[cfg(feature = "nft-create-type")]
         PAYLOAD_TYPE_NFT_CREATE_TYPE => Ok(TxKind::CreateType(CreateType::from(data)?)),
@@ -110,7 +110,7 @@ impl Mint {
     // not really needed right now as we have version 1 of all the structs
     // but this is how to do it when we need to support multiple versions?
     pub fn load(txo: &TxOrder) -> Result<Self, Error> {
-        let data = evaluation_ctx::tx_attributes(txo, 1);
+        let data = evaluation_ctx::tx_attributes(txo.handle, 1);
         Self::from(data)
     }
 
