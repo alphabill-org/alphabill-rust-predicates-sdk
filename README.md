@@ -19,7 +19,7 @@ be used to create predicate project from template:
 cargo-generate generate --git https://github.com/alphabill-org/alphabill-rust-predicates-sdk template
 ```
 
-### Predicates
+## Predicates
 
 Predicate project should be "library" project with
 ```toml
@@ -32,7 +32,7 @@ pub extern "C" fn predicate_name() -> u64 {
 }
 ```
 
-Return values should follow convention:
+Return value should follow convention:
  - `0`: predicate evaluated to "true";
  - `1`: predicate evaluated to "false";
  - any other value is considered to be "error code" (ie predicate failed);
@@ -42,7 +42,8 @@ the result of the predicate.
 
 
 ### Create WASM binary
-- compile the predicate into WASM binary, ie in case of using Rust
+
+Compile the predicate into WASM binary
 ```sh
 cargo build --release --target wasm32-unknown-unknown
 ```

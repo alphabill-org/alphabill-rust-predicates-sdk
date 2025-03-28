@@ -1,8 +1,12 @@
 # Multisignature Predicate
 
-This project implements Alphabill predicate for the 
-["Multisignature"](https://guardtime.atlassian.net/wiki/spaces/AB/pages/4690149429/Example+Use-Case+Multisignature+n+of+m)
-example use-case as WASM module.
+This project implements custom Alphabill predicate as WASM module.
+
+To see the documentation of the crate run
+```sh
+cargo doc --all-features
+```
+and open the generated doc in a web browser.
 
 ## Use-Case
 
@@ -21,8 +25,9 @@ of their respective public keys are stored in the predicates.
 
 ## Usage
 
-There is currently no tooling to create transaction which uses this predicate - the assumption is that the
-txo is signed offline and once enough signatures is collected it is sent to AB.
+There is currently no tooling to create transaction which uses this predicate - the assumption
+is that the transaction order is signed offline and once enough signatures is collected it is
+sent to Alphabill.
 
 ### Configuration
 
@@ -42,8 +47,13 @@ Example content of the `args.plist` file:
 See ie https://mediawiki.gnustep.org/index.php/Property_Lists for plist syntax.
 
 It's user's responsibility to make sure that number of PKHs is greater than or equal to the "threshold".
-Up to 255 signatures is supported, user's responsibility not to set greater threshold.
+Up to 255 signatures is supported, it is user's responsibility not to set greater threshold.
 
 ### AuthProof
 
-The auth proof of the unit is array of P2PKH proofs.
+The AuthProof of the transaction order must be CBOR array of P2PKH signatures
+in the same order as the PKH-s in the configuration. Missing signature must be
+represented by nil (`0xf6` in CBOR) so that the length of the array equals to
+the number of PKH-s in the configuration.
+The signatures should be encoded as raw byte buffers (ie not typed arrays but
+opaque buffers).

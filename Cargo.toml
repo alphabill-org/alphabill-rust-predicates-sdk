@@ -3,35 +3,45 @@ name = "alphabill"
 version = "0.1.0"
 edition = "2024"
 
-
 [dependencies]
+document-features = { version = "0.2", optional = true }
 
 
 [features]
 default = [ "panic-handler", "ft", "nft", "money" ]
 
-# when enabled lib implements panic handler for wasm32 target.
+#! ### Generic features
+## when enabled library implements panic handler for wasm32 target.
 panic-handler = []
 
-# Non Fungible Token features
+#! ### Non Fungible Token features
+#! These affect the `alphabill::txsystem::token::nft` module.
 nft = [ "nft-create-type", "nft-mint-token", "nft-update", "nft-transfer", "nft-type-data", "nft-token-data" ]
-# NFT transaction attributes
+## attributes of create NFT type transaction
 nft-create-type = []
+## attributes of mint NFT token transaction
 nft-mint-token = []
+## attributes of update NFT token transaction
 nft-update = []
+## attributes of transfer NFT token transaction
 nft-transfer = []
-# support for unit data types
+## NFT type unit data
 nft-type-data = []
+## NFT token unit data
 nft-token-data = []
 
-# Fungible Token features
+#! ### Fungible Token features
 ft = [ "ft-create-type", "ft-mint-token", "ft-transfer" ]
-# FT transaction attributes
+## attributes of create FT type transaction
 ft-create-type = []
+## attributes of mint FT token transaction
 ft-mint-token = []
+## attributes of transfer FT token transaction
 ft-transfer = []
 
+#! ### Money tx system features
 money = [ "money-split", "money-transfer" ]
-# money transaction attributes
+## attributes of split bill transaction
 money-split = []
+## attributes of transfer bill transaction
 money-transfer = []

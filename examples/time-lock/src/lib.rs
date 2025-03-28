@@ -17,8 +17,8 @@ recognized after that date.
 ## Prerequisites
 ### Configuration
 When the predicate is created the "configuration" must be provided as CBOR encoded
-array where the first item is locked until date (unsigned integer) followed Public
-Key Hash of the bearer (byte slice), ie
+array where the first item is locked until date (unsigned integer) followed by the
+Public Key Hash of the bearer (byte slice), ie
 
     [ locked_until_date, pkh ]
 

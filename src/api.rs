@@ -7,9 +7,12 @@ use alloc::vec::Vec;
 
 use crate::{evaluation_ctx::ABHandle, memory};
 
-pub fn digest_sha256(msg: Vec<u8>) -> Vec<u8> {
-    let p = msg.as_ptr();
-    let mut addr = crate::memory::pack_pointer((p as usize) as u32, msg.len());
+/**
+Returns the SHA256 checksum of the data.
+*/
+pub fn digest_sha256(data: Vec<u8>) -> Vec<u8> {
+    let p = data.as_ptr();
+    let mut addr = crate::memory::pack_pointer((p as usize) as u32, data.len());
     addr = unsafe { _digest_sha256(addr) };
     crate::memory::load_bytes(addr)
 }

@@ -34,10 +34,26 @@ cargo build --release --target wasm32-unknown-unknown
 
 Consult the [Alphabill documentation](https://docs.alphabill.org/docs/welcome)
 on how to use the output
-(`target/wasm32-unknown-unknown/release/{{crate_name}}.wasm`) as a
+(`target/wasm32-unknown-unknown/release/crate_name.wasm`) as a
 predicate with an Alphabill transaction system unit.
-*/
 
+## Features
+
+To help keep the binary size small some of the higher level data structures and functions
+can be switched on/off by using feature flags. To enable specific types and functions
+set the appropriate features in the `Cargo.toml`, ie
+
+```toml
+[dependencies.alphabill]
+default-features = false
+features = [ "nft-update", "nft-token-data" ]
+```
+Feature flags available are:
+*/
+#![cfg_attr(
+    feature = "document-features",
+    cfg_attr(doc, doc = ::document_features::document_features!())
+)]
 #![no_std]
 
 pub mod api;
@@ -55,16 +71,6 @@ pub mod txsystem;
 #[panic_handler]
 fn panic(_panic: &core::panic::PanicInfo<'_>) -> ! {
     core::arch::wasm32::unreachable()
-}
-
-#[doc(hidden)]
-/**
-Returns SDK version number. Host can use it do decide which features
-are available and how to encode data structures.
-*/
-#[unsafe(no_mangle)]
-pub extern "C" fn _ab_sdk_version() -> u32 {
-    1
 }
 
 /**

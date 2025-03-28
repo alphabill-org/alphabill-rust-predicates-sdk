@@ -1,8 +1,6 @@
-# Custom Alphabill Predicate
+# Time Lock Predicate
 
-This project implements predicate for the 
-["Time Lock"](https://guardtime.atlassian.net/wiki/spaces/AB/pages/4690575396/Example+Use-Case+Time+Lock)
-example use-case as WASM module.
+This project implements custom Alphabill predicate as WASM module.
 
 To see the documentation of the crate run
 ```sh
@@ -23,10 +21,10 @@ as arguments. The new owner can operate with the unit only after the unlock date
 ### Business rules
 
 The predicate stores the following data:
-- Owner: hash of an ECDSA public key for the designated token owner (lke for the P2PKH predicate);
-- Unlock time: a timestamp during which the predicate becomes satisfiable with the owner’s signature (in clock time as defined by the shard (initially root) consensus);
+- Owner: hash of an ECDSA public key for the designated token owner (like for the P2PKH predicate);
+- Unlock time: a timestamp during which the predicate becomes satisfiable with the owner’s signature (in clock time as defined by the shard);
 
-The owner predicate is satisfied only if the shard clock time equals or is later than the unlock time specified in the predicate and a signature is provided (in the owner proof) from the owner public key. The signature itself is the same as if they were regular single signatures on the transaction order.
+The owner predicate is satisfied only if the shard clock time equals or is later than the unlock time specified in the predicate and a signature is provided (in the owner proof) from the owner private key. The signature itself is the same as if they were regular single signatures on the transaction order.
 
 
 ## Steps to use this module in Alphabill:
@@ -35,7 +33,7 @@ The owner predicate is satisfied only if the shard clock time equals or is later
 
 Compile the Rust code into WASM binary:
 ```sh
-cargo build --release --target wasm32-unknown-unknown --all-features
+cargo build --release --target wasm32-unknown-unknown
 ```
 this creates wasm binary which contains the predicate function `time_lock`.
 
@@ -65,7 +63,7 @@ Example content of the `args.plist` file:
     /* timestamp, when the unit will be unlocked */
     <*I1709683200>,
     /* hex encoded public key hash of the (new) owner */
-    <01020305060708090abcdef>
+    <045559d0b5c1c260e3feb8fef6b360bd1570847e0d0c18d9b6c7a5a397873e53>
 )
 ```
 See ie https://gnustep.github.io/resources/documentation/Developer/Base/Reference/NSPropertyList.html
@@ -81,6 +79,9 @@ where `time_lock_bearer.cbor` file contains the predicate BLOB created
 on previous step (IOW output of the `create-wasm-predicate` tool). 
 
 **NB!** The wallet currently actually does not support the `bearer-clause` flag with `send` command!
+
+The new owner would operate with the unit as if it has the P2PKH predicate for the Bearer Predicate but
+she shouldn't be able to do so before the unlock date has passed.
 
 See the unit test in
 [Alphabill repo](https://github.com/alphabill-org/alphabill/blob/main/predicates/wasm/wvm/demo_time_lock_test.go)
