@@ -24,15 +24,27 @@ pub fn verify_tx_proof(tx_proof: ABHandle, tx_rec: ABHandle) -> bool {
 pub enum SignedByResult {
     True,
     False,
-    Error,
+    P2PKHError,
+    InvalidHandleTxO,
+    InvalidHandlePKH,
+    InvalidHandleProof,
+    NilPKH,
+    NilProof,
 }
 
 pub fn signed_by_pkh(txo: ABHandle, pkh: ABHandle, proof: ABHandle) -> SignedByResult {
     let code = unsafe { _tx_signed_by_pkh(txo, pkh, proof) };
+    //unsafe { core::mem::transmute(code as u8) }
     match code {
         0 => SignedByResult::True,
         1 => SignedByResult::False,
-        _ => SignedByResult::Error,
+        2 => SignedByResult::P2PKHError,
+        3 => SignedByResult::InvalidHandleTxO,
+        4 => SignedByResult::InvalidHandlePKH,
+        5 => SignedByResult::InvalidHandleProof,
+        6 => SignedByResult::NilPKH,
+        7 => SignedByResult::NilProof,
+        _ => unreachable!(),
     }
 }
 

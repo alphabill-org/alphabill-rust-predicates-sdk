@@ -30,10 +30,15 @@ in the same order as the PKH-s in the configuration. Missing signature must be
 represented by nil (`0xf6` in CBOR). The signatures should be encoded as raw byte
 buffers (ie not typed arrays but opaque buffers).
 
+When an proof is not nil and turns out to be invalid (verifying the P2PKH returns
+either false or error) the predicate returns "false" even when there is enough
+valid signatures to satisfy the threshold (IOW invalid signature is interpreted as veto).
+
 ## Returns
  - `0`: predicate evaluates to "true" (ie there is at least threshold valid signatures);
- - `1`: predicate evaluates to "false" (not enough valid signatures);
- - `0x0101`: predicate evaluates to "false" because the `threshold > len(pkh)` IOW invalid conf;
+ - `1`: predicate evaluates to "false" (too many signatures missing, early exit);
+ - `0xnn01`: false because P2PKH evaluates to "false" or error;
+ - `0xff01`: false because not enough positive votes (invalid threshold?);
  - `0x0c`: failed to load threshold configuration;
  - `0x1c`: number of proofs does not equal to number of PKH-s;
 */
@@ -43,7 +48,7 @@ pub extern "C" fn multi_sig() -> u64 {
     let cfg = cbor::parse_array(evaluation_ctx::HANDLE_CONFIG);
     // read the required signature count value
     let mut p = Decoder::from_handle(cfg[0]);
-    let mut threshold = match p.value() {
+    let threshold = match p.value() {
         Value::U64(v) => v as u8,
         Value::U32(v) => v as u8,
         _ => predicate_result!(Error::new(0x0C)),
@@ -57,25 +62,24 @@ pub extern "C" fn multi_sig() -> u64 {
     }
 
     // iterate over pkh/proofs and verify
-    let mut invalid_allowed = pkh_handles.len() - (threshold as usize);
+    let mut missing_allowed = pkh_handles.len() - (threshold as usize);
+    let mut valid_signatures: u8 = 0;
     for (i, pkh) in pkh_handles.iter().enumerate() {
         match signed_by_pkh(evaluation_ctx::HANDLE_TX_ORDER, *pkh, proof_handles[i]) {
-            SignedByResult::True => {
-                threshold -= 1;
-                if 0 == threshold {
-                    predicate_result!(true)
-                }
-            }
-            _ => {
+            SignedByResult::True => valid_signatures += 1,
+            SignedByResult::NilProof => {
                 // if it's no longer possible to get threshold valid signatures break early
-                if 0 == invalid_allowed {
+                if 0 == missing_allowed {
                     predicate_result!(false)
                 }
-                invalid_allowed -= 1;
+                missing_allowed -= 1;
             }
+            err => predicate_result!(false, err as u64),
         };
     }
-    // actually should never end up here... it must be that threshold is greater than
-    // the count of PKH/proofs or zero (and got overflow)?
-    predicate_result!(false, 1)
+
+    if valid_signatures >= threshold {
+        predicate_result!(true)
+    }
+    predicate_result!(false, 0xff)
 }
