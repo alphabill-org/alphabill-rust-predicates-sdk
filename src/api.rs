@@ -17,10 +17,6 @@ pub fn digest_sha256(data: Vec<u8>) -> Vec<u8> {
     crate::memory::load_bytes(addr)
 }
 
-pub fn verify_tx_proof(tx_proof: ABHandle, tx_rec: ABHandle) -> bool {
-    unsafe { _verify_tx_proof(tx_proof, tx_rec) == 0 }
-}
-
 pub enum SignedByResult {
     True,
     False,
@@ -74,9 +70,6 @@ pub fn amount_transferred(
 unsafe extern "C" {
     #[link_name = "amount_transferred"]
     fn _amount_transferred(tx_proof: ABHandle, pkh: ABHandle, ref_no: u64) -> u64;
-
-    #[link_name = "verify_tx_proof"]
-    fn _verify_tx_proof(h_proof: ABHandle, h_tx_rec: ABHandle) -> u32;
 
     #[link_name = "tx_signed_by_pkh"]
     fn _tx_signed_by_pkh(txo: ABHandle, pkh: ABHandle, proof: ABHandle) -> u32;
